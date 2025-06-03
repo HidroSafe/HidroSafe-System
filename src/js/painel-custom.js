@@ -197,3 +197,66 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusIndicator = currentStatus.querySelector('.status-indicator');
         const statusText = currentStatus.querySelector('.status-text');
         
+        // Remover classes existentes
+        statusIndicator.classList.remove('status-normal', 'status-attention', 'status-alert');
+        
+        if (currentWaterLevel >= 1.8) {
+            // Nível crítico
+            statusIndicator.classList.add('status-alert');
+            statusText.textContent = 'ALERTA';
+            addAlert('ALERTA: Nível crítico atingido!');
+        } else if (currentWaterLevel >= 1.5) {
+            // Nível de atenção
+            statusIndicator.classList.add('status-attention');
+            statusText.textContent = 'Atenção';
+            addAlert('Atenção: Nível elevado detectado');
+        } else {
+            // Nível normal
+            statusIndicator.classList.add('status-normal');
+            statusText.textContent = 'Normal';
+        }
+    }
+    
+    function toggleGate(gateNumber, open) {
+        const statusElement = gateNumber === 1 ? gate1Status : gate2Status;
+        const openingElement = gateNumber === 1 ? gate1Opening : gate2Opening;
+        const openBtn = gateNumber === 1 ? gate1OpenBtn : gate2OpenBtn;
+        const closeBtn = gateNumber === 1 ? gate1CloseBtn : gate2CloseBtn;
+        
+        if (open) {
+            statusElement.textContent = 'Aberta';
+            openingElement.textContent = '100%';
+            openBtn.disabled = true;
+            closeBtn.disabled = false;
+            if (gateNumber === 1) gate1IsOpen = true;
+            else gate2IsOpen = true;
+            addAlert(`Comporta ${gateNumber} aberta manualmente`);
+            
+            // Efeito no nível da água - abertura da comporta reduz o nível
+            currentElevationRate = (-Math.random() * 5 - 5).toFixed(1); // -5 a -10 cm/h
+            updateElevationRate(currentElevationRate);
+            
+            // Atualizar gráficos para refletir a mudança
+            updateCharts();
+        } else {
+            statusElement.textContent = 'Fechada';
+            openingElement.textContent = '0%';
+            openBtn.disabled = false;
+            closeBtn.disabled = true;
+            if (gateNumber === 1) gate1IsOpen = false;
+            else gate2IsOpen = false;
+            addAlert(`Comporta ${gateNumber} fechada manualmente`);
+            
+            // Efeito no nível da água - fechamento da comporta pode aumentar o nível se estiver chovendo
+            if (isRaining) {
+                currentElevationRate = (Math.random() * 5 + 5).toFixed(1); // 5-10 cm/h
+                updateElevationRate(currentElevationRate);
+            } else {
+                currentElevationRate = 0.0;
+                updateElevationRate(currentElevationRate);
+            }
+            
+            // Atualizar gráficos para refletir a mudança
+            updateCharts();
+        }
+    }
