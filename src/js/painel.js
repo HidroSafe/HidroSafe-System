@@ -287,4 +287,86 @@ document.addEventListener('DOMContentLoaded', function() {
             alertsList.removeChild(alertsList.lastChild);
         }
     }
+
+    function initCharts() {
+        // Gráfico de umidade
+        const humidityCtx = document.getElementById('humidityChart');
+        if (humidityCtx) {
+            const humidityChart = new Chart(humidityCtx, {
+                type: 'line',
+                data: {
+                    labels: generateTimeLabels(12, -1),
+                    datasets: [{
+                        label: 'Umidade (%)',
+                        data: generateRandomData(12, 60, 70),
+                        borderColor: '#4285F4',
+                        backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 50,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            window.humidityChart = humidityChart;
+        }
+        
+        // Gráfico de nível da água
+        const waterLevelCtx = document.getElementById('waterLevelChart');
+        if (waterLevelCtx) {
+            const waterLevelChart = new Chart(waterLevelCtx, {
+                type: 'line',
+                data: {
+                    labels: generateTimeLabels(24, -3),
+                    datasets: [{
+                        label: 'Nível da Água (m)',
+                        data: generateWaterLevelData(24),
+                        borderColor: '#1A73E8',
+                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Nível de Alerta',
+                        data: Array(24).fill(1.5),
+                        borderColor: '#FBBC04',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false
+                    }, {
+                        label: 'Nível Crítico',
+                        data: Array(24).fill(1.8),
+                        borderColor: '#EA4335',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0.5,
+                            max: 2.5
+                        }
+                    }
+                }
+            });
+            
+            window.waterLevelChart = waterLevelChart;
+        }
+    }
     
