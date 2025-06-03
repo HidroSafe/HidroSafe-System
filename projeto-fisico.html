@@ -37,3 +37,132 @@
             </div>
         </div>
     </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <h2>Projeto Físico HidroSafe</h2>
+                
+                <div class="project-details">
+                    <h3>Visão Geral do Sistema</h3>
+                    <p>O sistema físico HidroSafe é composto por dois módulos principais que trabalham em conjunto para monitorar, analisar e responder a riscos de enchentes em tempo real. Nossa solução combina sensores de alta precisão, processamento local e atuadores físicos para criar um sistema completo de prevenção de enchentes.</p>
+                    
+                    <div class="project-image-container">
+                        <img src="img/projeto-fisico.jpg" alt="Diagrama do sistema físico HidroSafe mostrando os módulos de monitoramento e controle" class="project-image">
+                        <p class="image-caption">Diagrama esquemático do sistema HidroSafe</p>
+                    </div>
+                    
+                    <h3>Módulo de Monitoramento Local</h3>
+                    <p>Este módulo é fixado em locais estratégicos próximos a rios, canais ou bueiros. Ele é responsável pela coleta contínua de dados ambientais e pela análise em tempo real das condições que podem levar a enchentes.</p>
+                    
+                    <h4>Componentes:</h4>
+                    <ul>
+                        <li><strong>Microcontrolador Arduino Uno</strong> - Processa os dados coletados e executa a lógica de análise de risco.</li>
+                        <li><strong>Sensor ultrassônico HC-SR04</strong> - Posicionado acima da superfície da água, mede constantemente o nível de rios ou canais com precisão de ±3mm.</li>
+                        <li><strong>Sensor DHT22</strong> - Coleta continuamente os dados de umidade e temperatura do ar. Quando a umidade está próxima ou igual a 100%, o sistema reconhece o início de uma chuva significativa.</li>
+                        <li><strong>Real Time Clock RTC DS3231</strong> - Mantém registro preciso de data e hora para os dados coletados.</li>
+                        <li><strong>Display LCD (I2C)</strong> - Exibe informações em tempo real sobre o nível da água e condições ambientais.</li>
+                        <li><strong>Sistema de alerta local</strong> - LEDs e buzzer para alertas visuais e sonoros.</li>
+                        <li><strong>Teclado matricial</strong> - Permite configuração e interação local com o sistema.</li>
+                        <li><strong>Sistema de energia</strong> - Bateria recarregável e painel solar para funcionamento autônomo.</li>
+                    </ul>
+                    
+                    <h4>Funcionamento:</h4>
+                    <p>Durante a chuva, os dados são analisados de forma contínua, detectando elevação gradual ou repentina do nível de água. Se o nível atingir valores de risco definidos (ex: 1,8m), o sistema emite alertas visuais e sonoros em tempo real. Quando o risco se mantém por um tempo crítico (ex: mais de 15 minutos de elevação constante), o sistema aciona diretamente o módulo de controle hidráulico.</p>
+                    
+                    <h3>Módulo de Controle Hidráulico (Atuador)</h3>
+                    <p>Este módulo é responsável por atuar sobre barreiras físicas como pequenas comportas ou portões hidráulicos, que regulam o fluxo de água e ajudam a prevenir o transbordamento. Este módulo é apresentado como um conceito demonstrativo do potencial do sistema.</p>
+                    
+                    <h4>Componentes:</h4>
+                    <ul>
+                        <li><strong>Servo motor MG996R</strong> - Responsável pelo movimento físico das comportas, com torque suficiente para operar pequenas barreiras.</li>
+                        <li><strong>Sensores de posição</strong> - Monitoram o estado atual das comportas (aberta/fechada).</li>
+                        <li><strong>Sistema de energia</strong> - Bateria recarregável e painel solar para funcionamento autônomo.</li>
+                    </ul>
+                    
+                    <h4>Funcionamento:</h4>
+                    <p>Com base nos dados analisados pelo módulo de monitoramento, o servo motor é acionado para abrir ou fechar as comportas de acordo com a necessidade. O sistema mantém registro do estado das comportas para garantir operação adequada em diferentes condições de nível de água.</p>
+                    
+                    <h3>Modelo Matemático de Funcionamento</h3>
+                    <p>O sistema HidroSafe utiliza um modelo matemático baseado em polinômios de grau 3 para analisar e prever o comportamento do nível de água durante eventos de chuva. Este modelo permite:</p>
+                    
+                    <ul>
+                        <li>Calcular a taxa de elevação do nível de água em tempo real</li>
+                        <li>Prever o tempo até que o nível atinja a cota de transbordamento</li>
+                        <li>Determinar o momento ideal para acionamento das comportas</li>
+                    </ul>
+                    
+                    <p>A lógica de acionamento das comportas considera três critérios principais:</p>
+                    <ol>
+                        <li>Comparação do nível atual com a cota de transbordamento</li>
+                        <li>Análise da taxa de elevação (derivada da função)</li>
+                        <li>Previsão do tempo até ultrapassagem da cota</li>
+                    </ol>
+                    
+                    <h3>Especificações Técnicas</h3>
+                    <table class="specs-table">
+                        <tr>
+                            <th>Componente</th>
+                            <th>Especificação</th>
+                            <th>Precisão/Alcance</th>
+                        </tr>
+                        <tr>
+                            <td>Sensor DHT22</td>
+                            <td>Umidade e temperatura</td>
+                            <td>±2% umidade, ±0.5°C temperatura</td>
+                        </tr>
+                        <tr>
+                            <td>HC-SR04</td>
+                            <td>Sensor ultrassônico</td>
+                            <td>Alcance 2cm-400cm, precisão ±3mm</td>
+                        </tr>
+                        <tr>
+                            <td>Microcontrolador</td>
+                            <td>Arduino Uno</td>
+                            <td>16MHz</td>
+                        </tr>
+                        <tr>
+                            <td>LCD</td>
+                            <td>Display I2C 16x2</td>
+                            <td>Interface visual local</td>
+                        </tr>
+                        <tr>
+                            <td>Bateria</td>
+                            <td>Li-ion 3.7V 2600mAh</td>
+                            <td>Autonomia de 72h sem recarga</td>
+                        </tr>
+                        <tr>
+                            <td>Painel Solar</td>
+                            <td>5W monocristalino</td>
+                            <td>Eficiência de 21%</td>
+                        </tr>
+                        <tr>
+                            <td>Servomotor</td>
+                            <td>MG996R</td>
+                            <td>Torque 10kg/cm</td>
+                        </tr>
+                        <tr>
+                            <td>Caixa de proteção</td>
+                            <td>IP67</td>
+                            <td>Resistente à água e poeira</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Instalação e Manutenção</h3>
+                    <p>O sistema HidroSafe foi projetado para ser de fácil instalação e baixa manutenção:</p>
+                    <ul>
+                        <li>Instalação em postes ou estruturas existentes próximas aos corpos d'água</li>
+                        <li>Calibração inicial simples com assistência técnica</li>
+                        <li>Manutenção preventiva anual recomendada</li>
+                        <li>Vida útil estimada de 5 anos para os componentes eletrônicos</li>
+                        <li>Substituição simples de módulos em caso de falha</li>
+                    </ul>
+                    
+                    <div class="project-image-container">
+                        <img src="img/instalacao.jpg" alt="Técnico instalando o sistema HidroSafe próximo a um rio" class="project-image">
+                        <p class="image-caption">Instalação do módulo de monitoramento</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
