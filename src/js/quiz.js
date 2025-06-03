@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 "El Niño",
                 "Aquecimento global",
                 "Inversão térmica",
-                "Efeito Coriolis"
+                "Buraco na camada de ozônio"
             ],
             correctAnswer: 1
         },
