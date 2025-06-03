@@ -119,3 +119,81 @@ document.addEventListener('DOMContentLoaded', function() {
     function stopRain() {
         clearInterval(rainInterval);
         
+        // Restaurar valores normais gradualmente
+        const recoveryInterval = setInterval(() => {
+            // Diminuir nível da água
+            currentElevationRate = (-Math.random() * 3 - 2).toFixed(1); // -2 a -5 cm/h
+            currentWaterLevel = Math.max(0.8, currentWaterLevel + (currentElevationRate / 100));
+            
+            // Atualizar interface
+            updateWaterLevel(currentWaterLevel);
+            updateElevationRate(currentElevationRate);
+            updateHumidity(Math.max(65, parseInt(humidity.textContent) - 5));
+            updateTemperature(Math.min(24, parseInt(temperature.textContent) + 0.5));
+            updateLastUpdate();
+            
+            // Verificar níveis de alerta
+            checkAlertLevels();
+            
+            // Atualizar gráficos
+            updateCharts();
+            
+            // Comportamento automático das comportas
+            if (operationMode.value === 'auto') {
+                autoControlGates();
+            }
+            
+            // Parar recuperação quando o nível voltar ao normal
+            if (currentWaterLevel <= 0.9) {
+                clearInterval(recoveryInterval);
+                updateElevationRate(0.0);
+                updatePrecipitation('0mm');
+                updateForecast('Estável');
+            }
+        }, 3000);
+    }
+    
+    function updateWaterLevel(level) {
+        const formattedLevel = level.toFixed(1);
+        currentLevelText.textContent = `${formattedLevel}m`;
+        
+        // Atualizar visualização do nível da água (0-100%)
+        const percentage = Math.min(100, (level / 2.5) * 100);
+        waterLevel.style.height = `${percentage}%`;
+    }
+    
+    function updateElevationRate(rate) {
+        elevationRate.textContent = `${rate} cm/h`;
+    }
+    
+    function updateHumidity(value) {
+        humidity.textContent = `${value}%`;
+        
+        // Atualizar gráfico de umidade
+        if (typeof updateHumidityChart === 'function') {
+            updateHumidityChart(value);
+        }
+    }
+    
+    function updateTemperature(value) {
+        temperature.textContent = `${value.toFixed(1)}°C`;
+    }
+    
+    function updatePrecipitation(value) {
+        precipitation.textContent = value;
+    }
+    
+    function updateForecast(value) {
+        forecast.textContent = value;
+    }
+    
+    function updateLastUpdate() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        lastUpdate.textContent = timeString;
+    }
+    
+    function checkAlertLevels() {
+        const statusIndicator = currentStatus.querySelector('.status-indicator');
+        const statusText = currentStatus.querySelector('.status-text');
+        
