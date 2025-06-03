@@ -40,24 +40,24 @@ document.addEventListener('DOMContentLoaded', function() {
     setActiveMenuItem();
     
     // Alternador de temas
-    const themeButtons = document.querySelectorAll('.theme-btn');
+    const temaButtons = document.querySelectorAll('.tema-btn');
     
-    themeButtons.forEach(button => {
+    temaButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const theme = this.getAttribute('data-theme');
+            const tema = this.getAttribute('data-tema');
             document.body.className = '';
-            document.body.classList.add(`theme-${theme}`);
+            document.body.classList.add(`tema-${tema}`);
             
             // Salvar preferência do usuário
-            localStorage.setItem('hidrosafe-theme', theme);
+            localStorage.setItem('hidrosafe-tema', tema);
         });
     });
     
     // Carregar tema salvo
-    const savedTheme = localStorage.getItem('hidrosafe-theme');
-    if (savedTheme) {
+    const savedtema = localStorage.getItem('hidrosafe-tema');
+    if (savedtema) {
         document.body.className = '';
-        document.body.classList.add(`theme-${savedTheme}`);
+        document.body.classList.add(`tema-${savedtema}`);
     }
         
     // Rolagem suave para links internos

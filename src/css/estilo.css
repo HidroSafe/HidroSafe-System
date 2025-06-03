@@ -26,14 +26,14 @@
 }
 
 /* Temas alternativos */
-.theme-dark {
+.tema-dark {
     --bg-color: #202124;
     --text-color: #E8EAED;
     --card-bg: #303134;
     --border-color: #5F6368;
 }
 
-.theme-light {
+.tema-light {
     --bg-color: #FFFFFF;
     --text-color: #202124;
     --card-bg: #F8F9FA;
@@ -41,7 +41,7 @@
 }
 
 /* Novo tema azul */
-.theme-blue {
+.tema-blue {
     --bg-color: #E8F0FE;
     --text-color: #174EA6;
     --card-bg: #D2E3FC;
@@ -208,13 +208,13 @@ nav {
 }
 
 /* Tema Switcher */
-.theme-switcher {
+.tema-switcher {
     display: flex;
     gap: var(--spacing-xs);
     align-items: center;
 }
 
-.theme-btn {
+.tema-btn {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -224,20 +224,20 @@ nav {
     margin: 0 2px; /* Espaçamento uniforme */
 }
 
-.theme-btn:hover {
+.tema-btn:hover {
     transform: scale(1.1);
 }
 
 
-.theme-btn[data-theme="dark"] {
+.tema-btn[data-tema="dark"] {
     background-color: #202124;
 }
 
-.theme-btn[data-theme="light"] {
+.tema-btn[data-tema="light"] {
     background-color: #FFFFFF;
 }
 
-.theme-btn[data-theme="blue"] {
+.tema-btn[data-tema="blue"] {
     background-color: #4285F4;
 }
 
