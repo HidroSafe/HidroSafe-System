@@ -1,4 +1,4 @@
-// Implementação de gráficos com JavaScript puro para o painel HidroSafe
+// Implementação de gráficos 
 
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar se estamos na página do painel
@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         grafiArea.classList.add('grafi-area');
         grafiArea.style.height = config.height + 'px';
         grafiArea.style.position = 'relative';
+        grafiArea.style.overflow = 'hidden'; // Impedir overflow
         container.appendChild(grafiArea);
         
         // Adicionar grid
@@ -164,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
         lineContainer.style.position = 'absolute';
         lineContainer.style.top = '0';
         lineContainer.style.left = '0';
+        lineContainer.style.overflow = 'hidden'; // Impedir overflow
         grafiArea.appendChild(lineContainer);
         
         // Criar container para labels de tempo
@@ -186,236 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
             labelsContainer.appendChild(label);
         }
     }
-    
-    function drawLineGrafi(container, data, labels, config) {
-        const grafiArea = container.querySelector('.line-grafi-container');
-        if (!grafiArea) return;
-        
-        // Limpar área do gráfico
-        grafiArea.innerHTML = '';
-        
-        // Atualizar labels de tempo
-        const timeLabels = container.querySelectorAll('.time-label');
-        timeLabels.forEach(label => {
-            const index = parseInt(label.dataset.index);
-            if (index < labels.length) {
-                label.textContent = labels[index];
-            }
-        });
-        
-        // Criar SVG para o gráfico
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('width', '100%');
-        svg.setAttribute('height', '100%');
-        svg.style.overflow = 'visible';
-        grafiArea.appendChild(svg);
-        
-        // Calcular pontos para o gráfico
-        const points = [];
-        const width = grafiArea.offsetWidth;
-        const height = grafiArea.offsetHeight;
-        const xStep = width / (data.length - 1);
-        
-        for (let i = 0; i < data.length; i++) {
-            const x = i * xStep;
-            const normalizedValue = (data[i] - config.minValue) / (config.maxValue - config.minValue);
-            const y = height - (normalizedValue * height);
-            points.push({ x, y });
-        }
-        
-        // Criar caminho para a área preenchida
-        const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        let areaPathD = `M${points[0].x},${height} `;
-        
-        // Adicionar pontos ao caminho
-        points.forEach(point => {
-            areaPathD += `L${point.x},${point.y} `;
-        });
-        
-        // Fechar o caminho
-        areaPathD += `L${points[points.length - 1].x},${height} Z`;
-        
-        areaPath.setAttribute('d', areaPathD);
-        areaPath.setAttribute('fill', config.fillColor);
-        svg.appendChild(areaPath);
-        
-        // Criar caminho para a linha
-        const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        let linePathD = `M${points[0].x},${points[0].y} `;
-        
-        // Adicionar pontos ao caminho
-        for (let i = 1; i < points.length; i++) {
-            linePathD += `L${points[i].x},${points[i].y} `;
-        }
-        
-        linePath.setAttribute('d', linePathD);
-        linePath.setAttribute('stroke', config.color);
-        linePath.setAttribute('stroke-width', config.lineWidth);
-        linePath.setAttribute('fill', 'none');
-        svg.appendChild(linePath);
-        
-        // Adicionar pontos
-        points.forEach((point, index) => {
-            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', point.x);
-            circle.setAttribute('cy', point.y);
-            circle.setAttribute('r', 3);
-            circle.setAttribute('fill', config.color);
-            
-            // Adicionar tooltip
-            circle.addEventListener('mouseover', function(e) {
-                showTooltip(e, `${labels[index]}: ${data[index].toFixed(1)}`);
-            });
-            
-            circle.addEventListener('mouseout', hideTooltip);
-            
-            svg.appendChild(circle);
-        });
-    }
-    
-    function addReferenceLine(container, value, label, color, config) {
-        const grafiArea = container.querySelector('.grafi-area');
-        if (!grafiArea) return;
-        
-        // Calcular posição Y da linha
-        const height = grafiArea.offsetHeight;
-        const normalizedValue = (value - config.minValue) / (config.maxValue - config.minValue);
-        const y = height - (normalizedValue * height);
-        
-        // Criar linha de referência
-        const referenceLine = document.createElement('div');
-        referenceLine.classList.add('reference-line');
-        referenceLine.style.position = 'absolute';
-        referenceLine.style.left = '0';
-        referenceLine.style.right = '0';
-        referenceLine.style.top = y + 'px';
-        referenceLine.style.borderTop = `2px dashed ${color}`;
-        grafiArea.appendChild(referenceLine);
-        
-        // Adicionar label
-        const referenceLabel = document.createElement('span');
-        referenceLabel.classList.add('reference-label');
-        referenceLabel.style.position = 'absolute';
-        referenceLabel.style.right = '5px';
-        referenceLabel.style.top = '-15px';
-        referenceLabel.style.fontSize = '12px';
-        referenceLabel.style.color = color;
-        referenceLabel.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-        referenceLabel.style.padding = '2px 5px';
-        referenceLabel.style.borderRadius = '3px';
-        referenceLabel.textContent = `${label} (${value}m)`;
-        referenceLine.appendChild(referenceLabel);
-    }
-    
-    // Funções auxiliares
-    function generateTimeLabels(count, hourOffset = 0) {
-        const labels = [];
-        const now = new Date();
-        
-        for (let i = count - 1; i >= 0; i--) {
-            const time = new Date(now);
-            time.setHours(time.getHours() - i + hourOffset);
-            labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-        }
-        
-        return labels;
-    }
-    
-    function generateRandomData(count, min, max) {
-        return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
-    }
-    
-    function generateWaterLevelData(count) {
-        const baseLevel = 0.9;
-        const data = [];
-        
-        for (let i = 0; i < count; i++) {
-            // Gerar um nível de água realista com pequenas variações
-            const variation = (Math.random() * 0.2) - 0.1; // -0.1 a 0.1
-            data.push(baseLevel + variation);
-        }
-        
-        return data;
-    }
-    
-    // Tooltip para pontos do gráfico
-    function showTooltip(event, text) {
-        let tooltip = document.getElementById('grafi-tooltip');
-        
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.id = 'grafi-tooltip';
-            tooltip.style.position = 'fixed';
-            tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-            tooltip.style.color = 'white';
-            tooltip.style.padding = '5px 10px';
-            tooltip.style.borderRadius = '4px';
-            tooltip.style.fontSize = '12px';
-            tooltip.style.zIndex = '1000';
-            tooltip.style.pointerEvents = 'none';
-            document.body.appendChild(tooltip);
-        }
-        
-        tooltip.textContent = text;
-        tooltip.style.display = 'block';
-        tooltip.style.left = (event.pageX + 10) + 'px';
-        tooltip.style.top = (event.pageY - 30) + 'px';
-    }
-    
-    function hideTooltip() {
-        const tooltip = document.getElementById('grafi-tooltip');
-        if (tooltip) {
-            tooltip.style.display = 'none';
-        }
-    }
 });
 
-// Funções para atualização dos gráficos (chamadas pelo painel.js)
-function updateHumidityGrafi(value) {
-    if (!window.humidityGrafiData) return;
-    
-    const grafiData = window.humidityGrafiData;
-    const grafiContainer = document.getElementById('humidity-grafi');
-    
-    if (!grafiContainer) return;
-    
-    // Atualizar dados
-    grafiData.data.push(value);
-    grafiData.data.shift();
-    
-    // Atualizar labels
-    grafiData.labels.push(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-    grafiData.labels.shift();
-    
-    // Redesenhar gráfico
-    drawLineGrafi(grafiContainer, grafiData.data, grafiData.labels, grafiData.config);
-}
-
-function updateWaterLevelGrafi(value) {
-    if (!window.waterLevelGrafiData) return;
-    
-    const grafiData = window.waterLevelGrafiData;
-    const grafiContainer = document.getElementById('water-level-grafi');
-    
-    if (!grafiContainer) return;
-    
-    // Atualizar dados
-    grafiData.data.push(value);
-    grafiData.data.shift();
-    
-    // Atualizar labels
-    grafiData.labels.push(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-    grafiData.labels.shift();
-    
-    // Redesenhar gráfico
-    drawLineGrafi(grafiContainer, grafiData.data, grafiData.labels, grafiData.config);
-    
-    // Adicionar linhas de referência
-    addReferenceLine(grafiContainer, 1.5, 'Nível de Alerta', '#FBBC04', grafiData.config);
-    addReferenceLine(grafiContainer, 1.8, 'Nível Crítico', '#EA4335', grafiData.config);
-}
-
-// Função para desenhar gráfico (acessível globalmente)
+// Funções globais para desenho e atualização dos gráficos
 function drawLineGrafi(container, data, labels, config) {
     const grafiArea = container.querySelector('.line-grafi-container');
     if (!grafiArea) return;
@@ -436,6 +211,8 @@ function drawLineGrafi(container, data, labels, config) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', `0 0 ${grafiArea.offsetWidth} ${grafiArea.offsetHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.style.overflow = 'visible';
     grafiArea.appendChild(svg);
     
@@ -490,18 +267,39 @@ function drawLineGrafi(container, data, labels, config) {
         circle.setAttribute('cy', point.y);
         circle.setAttribute('r', 3);
         circle.setAttribute('fill', config.color);
+        
+        // Adicionar tooltip
+        circle.addEventListener('mouseover', function(e) {
+            showTooltip(e, `${labels[index]}: ${data[index].toFixed(1)}`);
+        });
+        
+        circle.addEventListener('mouseout', hideTooltip);
+        
         svg.appendChild(circle);
     });
+    
+    // Adicionar clipping path para garantir que o gráfico não ultrapasse os limites
+    const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+    const clipId = 'clip-' + Math.random().toString(36).substr(2, 9);
+    clipPath.setAttribute('id', clipId);
+    
+    const clipRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    clipRect.setAttribute('x', '0');
+    clipRect.setAttribute('y', '0');
+    clipRect.setAttribute('width', width);
+    clipRect.setAttribute('height', height);
+    
+    clipPath.appendChild(clipRect);
+    svg.appendChild(clipPath);
+    
+    // Aplicar clipping path aos elementos do gráfico
+    areaPath.setAttribute('clip-path', `url(#${clipId})`);
+    linePath.setAttribute('clip-path', `url(#${clipId})`);
 }
 
-// Função para adicionar linhas de referência (acessível globalmente)
 function addReferenceLine(container, value, label, color, config) {
     const grafiArea = container.querySelector('.grafi-area');
     if (!grafiArea) return;
-    
-    // Remover linhas de referência existentes com o mesmo label
-    const existingLines = grafiArea.querySelectorAll(`.reference-line[data-label="${label}"]`);
-    existingLines.forEach(line => line.remove());
     
     // Calcular posição Y da linha
     const height = grafiArea.offsetHeight;
@@ -511,7 +309,6 @@ function addReferenceLine(container, value, label, color, config) {
     // Criar linha de referência
     const referenceLine = document.createElement('div');
     referenceLine.classList.add('reference-line');
-    referenceLine.dataset.label = label;
     referenceLine.style.position = 'absolute';
     referenceLine.style.left = '0';
     referenceLine.style.right = '0';
@@ -533,3 +330,136 @@ function addReferenceLine(container, value, label, color, config) {
     referenceLabel.textContent = `${label} (${value}m)`;
     referenceLine.appendChild(referenceLabel);
 }
+
+// Funções auxiliares
+function generateTimeLabels(count, hourOffset = 0) {
+    const labels = [];
+    const now = new Date();
+    
+    for (let i = count - 1; i >= 0; i--) {
+        const time = new Date(now);
+        time.setHours(time.getHours() - i + hourOffset);
+        labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+    }
+    
+    return labels;
+}
+
+function generateRandomData(count, min, max) {
+    return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
+}
+
+function generateWaterLevelData(count) {
+    const baseLevel = 0.9;
+    const data = [];
+    
+    for (let i = 0; i < count; i++) {
+        // Gerar um nível de água realista com pequenas variações
+        const variation = (Math.random() * 0.2) - 0.1; // -0.1 a 0.1
+        data.push(baseLevel + variation);
+    }
+    
+    return data;
+}
+
+// Tooltip para pontos do gráfico
+function showTooltip(event, text) {
+    let tooltip = document.getElementById('grafi-tooltip');
+    
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'grafi-tooltip';
+        tooltip.style.position = 'fixed';
+        tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        tooltip.style.color = 'white';
+        tooltip.style.padding = '5px 10px';
+        tooltip.style.borderRadius = '4px';
+        tooltip.style.fontSize = '12px';
+        tooltip.style.zIndex = '1000';
+        tooltip.style.pointerEvents = 'none';
+        document.body.appendChild(tooltip);
+    }
+    
+    tooltip.textContent = text;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (event.pageX + 10) + 'px';
+    tooltip.style.top = (event.pageY - 30) + 'px';
+}
+
+function hideTooltip() {
+    const tooltip = document.getElementById('grafi-tooltip');
+    if (tooltip) {
+        tooltip.style.display = 'none';
+    }
+}
+
+// Funções para atualização dos gráficos (chamadas pelo painel.js)
+function updateHumidityGrafi(value) {
+    if (!window.humidityGrafiData) return;
+    
+    const grafiData = window.humidityGrafiData;
+    const grafiContainer = document.getElementById('humidity-grafi');
+    
+    if (!grafiContainer) return;
+    
+    // Atualizar dados
+    grafiData.data.push(value);
+    grafiData.data.shift();
+    
+    // Atualizar labels
+    grafiData.labels.push(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+    grafiData.labels.shift();
+    
+    // Redesenhar gráfico
+    drawLineGrafi(grafiContainer, grafiData.data, grafiData.labels, grafiData.config);
+}
+
+function updateWaterLevelGrafi(value) {
+    if (!window.waterLevelGrafiData) return;
+    
+    const grafiData = window.waterLevelGrafiData;
+    const grafiContainer = document.getElementById('water-level-grafi');
+    
+    if (!grafiContainer) return;
+    
+    // Atualizar dados
+    grafiData.data.push(value);
+    grafiData.data.shift();
+    
+    // Atualizar labels
+    grafiData.labels.push(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+    grafiData.labels.shift();
+    
+    // Redesenhar gráfico
+    drawLineGrafi(grafiContainer, grafiData.data, grafiData.labels, grafiData.config);
+    
+    // Adicionar linhas de referência
+    addReferenceLine(grafiContainer, 1.5, 'Nível de Alerta', '#FBBC04', grafiData.config);
+    addReferenceLine(grafiContainer, 1.8, 'Nível Crítico', '#EA4335', grafiData.config);
+}
+
+// Adicionar listener para redimensionamento da janela
+window.addEventListener('resize', function() {
+    // Redesenhar gráficos quando a janela for redimensionada
+    if (window.humidityGrafiData) {
+        const grafiContainer = document.getElementById('humidity-grafi');
+        if (grafiContainer) {
+            // Atualizar largura do gráfico
+            window.humidityGrafiData.config.width = grafiContainer.offsetWidth;
+            drawLineGrafi(grafiContainer, window.humidityGrafiData.data, window.humidityGrafiData.labels, window.humidityGrafiData.config);
+        }
+    }
+    
+    if (window.waterLevelGrafiData) {
+        const grafiContainer = document.getElementById('water-level-grafi');
+        if (grafiContainer) {
+            // Atualizar largura do gráfico
+            window.waterLevelGrafiData.config.width = grafiContainer.offsetWidth;
+            drawLineGrafi(grafiContainer, window.waterLevelGrafiData.data, window.waterLevelGrafiData.labels, window.waterLevelGrafiData.config);
+            
+            // Adicionar linhas de referência
+            addReferenceLine(grafiContainer, 1.5, 'Nível de Alerta', '#FBBC04', window.waterLevelGrafiData.config);
+            addReferenceLine(grafiContainer, 1.8, 'Nível Crítico', '#EA4335', window.waterLevelGrafiData.config);
+        }
+    }
+});

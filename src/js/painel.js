@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let alertCount = 0;
 
     // Inicializar gráficos
-    initCharts();
+    // Nota: Os gráficos são inicializados automaticamente pelo grafico.js
     
     // Event listeners
     if (simulateRainBtn) {
@@ -99,6 +99,18 @@ document.addEventListener('DOMContentLoaded', function() {
         rainInterval = setInterval(() => {
             // Aumentar nível da água
             currentElevationRate = (Math.random() * 5 + 5).toFixed(1); // 5-10 cm/h
+            
+            // Ajustar taxa de elevação com base no estado das comportas
+            if (gate1IsOpen) {
+                currentElevationRate = (parseFloat(currentElevationRate) - 3).toFixed(1);
+            }
+            if (gate2IsOpen) {
+                currentElevationRate = (parseFloat(currentElevationRate) - 2).toFixed(1);
+            }
+            
+            // Garantir que a taxa não fique negativa durante a chuva
+            currentElevationRate = Math.max(0.5, parseFloat(currentElevationRate)).toFixed(1);
+            
             currentWaterLevel += (currentElevationRate / 100); // converter cm para m
             
             // Atualizar interface
@@ -126,6 +138,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const recoveryInterval = setInterval(() => {
             // Diminuir nível da água
             currentElevationRate = (-Math.random() * 3 - 2).toFixed(1); // -2 a -5 cm/h
+            
+            // Ajustar taxa de recuperação com base no estado das comportas
+            if (gate1IsOpen) {
+                currentElevationRate = (parseFloat(currentElevationRate) - 3).toFixed(1);
+            }
+            if (gate2IsOpen) {
+                currentElevationRate = (parseFloat(currentElevationRate) - 2).toFixed(1);
+            }
+            
             currentWaterLevel = Math.max(0.8, currentWaterLevel + (currentElevationRate / 100));
             
             // Atualizar interface
@@ -229,6 +250,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (gateNumber === 1) gate1IsOpen = true;
             else gate2IsOpen = true;
             addAlert(`Comporta ${gateNumber} aberta manualmente`);
+            
+            // Efeito imediato no nível da água quando a comporta é aberta
+            if (isRaining) {
+                // Durante chuva, reduz a taxa de elevação
+                currentElevationRate = (parseFloat(currentElevationRate) - (gateNumber === 1 ? 3 : 2)).toFixed(1);
+                currentElevationRate = Math.max(0.5, parseFloat(currentElevationRate)).toFixed(1);
+            } else {
+                // Sem chuva, aumenta a taxa de descida
+                currentElevationRate = (parseFloat(currentElevationRate) - (gateNumber === 1 ? 3 : 2)).toFixed(1);
+            }
+            
+            // Atualizar interface e gráficos
+            updateElevationRate(currentElevationRate);
+            updateCharts();
         } else {
             statusElement.textContent = 'Fechada';
             openingElement.textContent = '0%';
@@ -237,6 +272,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (gateNumber === 1) gate1IsOpen = false;
             else gate2IsOpen = false;
             addAlert(`Comporta ${gateNumber} fechada manualmente`);
+            
+            // Efeito imediato no nível da água quando a comporta é fechada
+            if (isRaining) {
+                // Durante chuva, aumenta a taxa de elevação
+                currentElevationRate = (parseFloat(currentElevationRate) + (gateNumber === 1 ? 3 : 2)).toFixed(1);
+            } else {
+                // Sem chuva, reduz a taxa de descida
+                currentElevationRate = (parseFloat(currentElevationRate) + (gateNumber === 1 ? 3 : 2)).toFixed(1);
+            }
+            
+            // Atualizar interface e gráficos
+            updateElevationRate(currentElevationRate);
+            updateCharts();
         }
     }
     
@@ -288,138 +336,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function initCharts() {
-        // Gráfico de umidade
-        const humidityCtx = document.getElementById('humidityChart');
-        if (humidityCtx) {
-            const humidityChart = new Chart(humidityCtx, {
-                type: 'line',
-                data: {
-                    labels: generateTimeLabels(12, -1),
-                    datasets: [{
-                        label: 'Umidade (%)',
-                        data: generateRandomData(12, 60, 70),
-                        borderColor: '#4285F4',
-                        backgroundColor: 'rgba(66, 133, 244, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 50,
-                            max: 100
-                        }
-                    }
-                }
-            });
-            
-            window.humidityChart = humidityChart;
-        }
-        
-        // Gráfico de nível da água
-        const waterLevelCtx = document.getElementById('waterLevelChart');
-        if (waterLevelCtx) {
-            const waterLevelChart = new Chart(waterLevelCtx, {
-                type: 'line',
-                data: {
-                    labels: generateTimeLabels(24, -3),
-                    datasets: [{
-                        label: 'Nível da Água (m)',
-                        data: generateWaterLevelData(24),
-                        borderColor: '#1A73E8',
-                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: 'Nível de Alerta',
-                        data: Array(24).fill(1.5),
-                        borderColor: '#FBBC04',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false
-                    }, {
-                        label: 'Nível Crítico',
-                        data: Array(24).fill(1.8),
-                        borderColor: '#EA4335',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 0.5,
-                            max: 2.5
-                        }
-                    }
-                }
-            });
-            
-            window.waterLevelChart = waterLevelChart;
-        }
-    }
-
+    // Função para atualizar os gráficos usando as funções do grafico.js
     function updateCharts() {
         // Atualizar gráfico de umidade
-        if (window.humidityChart) {
-            const chart = window.humidityChart;
-            chart.data.datasets[0].data.push(parseInt(humidity.textContent));
-            chart.data.datasets[0].data.shift();
-            chart.data.labels.push(new Date().toLocaleTimeString());
-            chart.data.labels.shift();
-            chart.update();
+        if (typeof updateHumidityGrafi === 'function') {
+            updateHumidityGrafi(parseInt(humidity.textContent));
         }
         
         // Atualizar gráfico de nível da água
-        if (window.waterLevelChart) {
-            const chart = window.waterLevelChart;
-            chart.data.datasets[0].data.push(currentWaterLevel);
-            chart.data.datasets[0].data.shift();
-            chart.data.labels.push(new Date().toLocaleTimeString());
-            chart.data.labels.shift();
-            chart.update();
+        if (typeof updateWaterLevelGrafi === 'function') {
+            updateWaterLevelGrafi(currentWaterLevel);
         }
-    }
-    
-    function generateTimeLabels(count, hourOffset = 0) {
-        const labels = [];
-        const now = new Date();
-        
-        for (let i = count - 1; i >= 0; i--) {
-            const time = new Date(now);
-            time.setHours(time.getHours() - i + hourOffset);
-            labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-        }
-        
-        return labels;
-    }
-    
-    function generateRandomData(count, min, max) {
-        return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
-    }
-    
-    function generateWaterLevelData(count) {
-        const baseLevel = 0.9;
-        const data = [];
-        
-        for (let i = 0; i < count; i++) {
-            // Gerar um nível de água realista com pequenas variações
-            const variation = (Math.random() * 0.2) - 0.1; // -0.1 a 0.1
-            data.push(baseLevel + variation);
-        }
-        
-        return data;
     }
     
     // Inicializar valores
@@ -427,5 +354,3 @@ document.addEventListener('DOMContentLoaded', function() {
     updateElevationRate(currentElevationRate);
     updateLastUpdate();
 });
-
-    
