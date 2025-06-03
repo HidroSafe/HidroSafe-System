@@ -369,4 +369,63 @@ document.addEventListener('DOMContentLoaded', function() {
             window.waterLevelChart = waterLevelChart;
         }
     }
+
+    function updateCharts() {
+        // Atualizar gráfico de umidade
+        if (window.humidityChart) {
+            const chart = window.humidityChart;
+            chart.data.datasets[0].data.push(parseInt(humidity.textContent));
+            chart.data.datasets[0].data.shift();
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.labels.shift();
+            chart.update();
+        }
+        
+        // Atualizar gráfico de nível da água
+        if (window.waterLevelChart) {
+            const chart = window.waterLevelChart;
+            chart.data.datasets[0].data.push(currentWaterLevel);
+            chart.data.datasets[0].data.shift();
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.labels.shift();
+            chart.update();
+        }
+    }
+    
+    function generateTimeLabels(count, hourOffset = 0) {
+        const labels = [];
+        const now = new Date();
+        
+        for (let i = count - 1; i >= 0; i--) {
+            const time = new Date(now);
+            time.setHours(time.getHours() - i + hourOffset);
+            labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+        }
+        
+        return labels;
+    }
+    
+    function generateRandomData(count, min, max) {
+        return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
+    }
+    
+    function generateWaterLevelData(count) {
+        const baseLevel = 0.9;
+        const data = [];
+        
+        for (let i = 0; i < count; i++) {
+            // Gerar um nível de água realista com pequenas variações
+            const variation = (Math.random() * 0.2) - 0.1; // -0.1 a 0.1
+            data.push(baseLevel + variation);
+        }
+        
+        return data;
+    }
+    
+    // Inicializar valores
+    updateWaterLevel(currentWaterLevel);
+    updateElevationRate(currentElevationRate);
+    updateLastUpdate();
+});
+
     
