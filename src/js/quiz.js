@@ -114,3 +114,114 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 1
         }
     ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOption = null;
+    
+    // Iniciar o quiz
+    if (startButton) {
+        startButton.addEventListener('click', startQuiz);
+    }
+    
+    // Próxima pergunta
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            if (selectedOption === null) {
+                alert('Por favor, selecione uma opção antes de continuar.');
+                return;
+            }
+            
+            // Verificar resposta
+            if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
+                score++;
+            }
+            
+            currentQuestionIndex++;
+            selectedOption = null;
+            
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(currentQuestionIndex);
+            } else {
+                showResults();
+            }
+        });
+    }
+    
+    // Reiniciar o quiz
+    if (restartButton) {
+        restartButton.addEventListener('click', startQuiz);
+    }
+    
+    function startQuiz() {
+        quizStart.style.display = 'none';
+        quizResults.style.display = 'none';
+        quizQuestions.style.display = 'block';
+        
+        currentQuestionIndex = 0;
+        score = 0;
+        selectedOption = null;
+        
+        showQuestion(currentQuestionIndex);
+    }
+    
+    function showQuestion(index) {
+        const question = questions[index];
+        
+        questionContainer.innerHTML = `
+            <h3>Pergunta ${index + 1} de ${questions.length}</h3>
+            <p>${question.question}</p>
+        `;
+        
+        optionsContainer.innerHTML = '';
+        
+        question.options.forEach((option, i) => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('option');
+            button.addEventListener('click', () => selectOption(i));
+            optionsContainer.appendChild(button);
+        });
+        
+        // Atualizar texto do botão na última pergunta
+        if (index === questions.length - 1) {
+            nextButton.textContent = 'Ver Resultado';
+        } else {
+            nextButton.textContent = 'Próxima';
+        }
+    }
+    
+    function selectOption(index) {
+        selectedOption = index;
+        
+        // Remover seleção anterior
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => option.classList.remove('selected'));
+        
+        // Destacar opção selecionada
+        options[index].classList.add('selected');
+    }
+    
+    function showResults() {
+        quizQuestions.style.display = 'none';
+        quizResults.style.display = 'block';
+        
+        const percentage = (score / questions.length) * 100;
+        let message = '';
+        
+        if (percentage >= 80) {
+            message = 'Excelente! Você é um especialista em prevenção de enchentes e sustentabilidade!';
+        } else if (percentage >= 60) {
+            message = 'Muito bom! Você tem um bom conhecimento sobre mitigação de enchentes e meio ambiente.';
+        } else if (percentage >= 40) {
+            message = 'Bom trabalho! Mas ainda há espaço para aprender mais sobre soluções sustentáveis para enchentes.';
+        } else {
+            message = 'Você pode melhorar! Que tal estudar mais sobre prevenção de enchentes e práticas ambientais?';
+        }
+        
+        scoreDisplay.innerHTML = `
+            <p>Você acertou ${score} de ${questions.length} perguntas (${percentage}%).</p>
+            <p>${message}</p>
+        `;
+    }
+});
