@@ -71,4 +71,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Funções
+    function toggleRainSimulation() {
+        isRaining = !isRaining;
+        
+        if (isRaining) {
+            simulateRainBtn.textContent = 'Parar Simulação';
+            simulateRainBtn.classList.add('active');
+            startRain();
+            addAlert('Simulação de chuva iniciada');
+        } else {
+            simulateRainBtn.textContent = 'Simular Chuva';
+            simulateRainBtn.classList.remove('active');
+            stopRain();
+            addAlert('Simulação de chuva interrompida');
+        }
+    }
     
+    function startRain() {
+        // Atualizar umidade e temperatura
+        updateHumidity(95);
+        updateTemperature(22);
+        updatePrecipitation('15mm');
+        updateForecast('Chuva intensa');
+        
+        // Iniciar elevação do nível da água
+        rainInterval = setInterval(() => {
+            // Aumentar nível da água
+            currentElevationRate = (Math.random() * 5 + 5).toFixed(1); // 5-10 cm/h
+            currentWaterLevel += (currentElevationRate / 100); // converter cm para m
+            
+            // Atualizar interface
+            updateWaterLevel(currentWaterLevel);
+            updateElevationRate(currentElevationRate);
+            updateLastUpdate();
+            
+            // Verificar níveis de alerta
+            checkAlertLevels();
+            
+            // Atualizar gráficos
+            updateCharts();
+            
+            // Comportamento automático das comportas
+            if (operationMode.value === 'auto') {
+                autoControlGates();
+            }
+        }, 3000); // Atualizar a cada 3 segundos
+    }
+    
+    function stopRain() {
+        clearInterval(rainInterval);
+        
+        // Restaurar valores normais gradualmente
+        const recoveryInterval = setInterval(() => {
+            // Diminuir nível da água
+            currentElevationRate = (-Math.random() * 3 - 2).toFixed(1); // -2 a -5 cm/h
+            currentWaterLevel = Math.max(0.8, currentWaterLevel + (currentElevationRate / 100));
+            
+            // Atualizar interface
+            updateWaterLevel(currentWaterLevel);
+            updateElevationRate(currentElevationRate);
+            updateHumidity(Math.max(65, parseInt(humidity.textContent) - 5));
+            updateTemperature(Math.min(24, parseInt(temperature.textContent) + 0.5));
+            updateLastUpdate();
+            
+            // Verificar níveis de alerta
+            checkAlertLevels();
+            
+            // Atualizar gráficos
+            updateCharts();
