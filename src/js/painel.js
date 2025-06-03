@@ -31,3 +31,44 @@ document.addEventListener('DOMContentLoaded', function() {
     let gate1IsOpen = false;
     let gate2IsOpen = false;
     let alertCount = 0;
+
+    // Inicializar gráficos
+    initCharts();
+    
+    // Event listeners
+    if (simulateRainBtn) {
+        simulateRainBtn.addEventListener('click', toggleRainSimulation);
+    }
+    
+    if (gate1OpenBtn) {
+        gate1OpenBtn.addEventListener('click', () => toggleGate(1, true));
+    }
+    
+    if (gate1CloseBtn) {
+        gate1CloseBtn.addEventListener('click', () => toggleGate(1, false));
+    }
+    
+    if (gate2OpenBtn) {
+        gate2OpenBtn.addEventListener('click', () => toggleGate(2, true));
+    }
+    
+    if (gate2CloseBtn) {
+        gate2CloseBtn.addEventListener('click', () => toggleGate(2, false));
+    }
+    
+    if (operationMode) {
+        operationMode.addEventListener('change', function() {
+            const isManual = this.value === 'manual';
+            
+            // Habilitar/desabilitar controles de comporta com base no modo
+            gate1OpenBtn.disabled = !isManual;
+            gate1CloseBtn.disabled = !isManual || !gate1IsOpen;
+            gate2OpenBtn.disabled = !isManual;
+            gate2CloseBtn.disabled = !isManual || !gate2IsOpen;
+            
+            // Adicionar alerta sobre mudança de modo
+            addAlert(`Modo de operação alterado para ${isManual ? 'Manual' : 'Automático'}`);
+        });
+    }
+    
+    
