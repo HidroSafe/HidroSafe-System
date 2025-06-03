@@ -214,4 +214,77 @@ document.addEventListener('DOMContentLoaded', function() {
             statusText.textContent = 'Normal';
         }
     }
+
+    function toggleGate(gateNumber, open) {
+        const statusElement = gateNumber === 1 ? gate1Status : gate2Status;
+        const openingElement = gateNumber === 1 ? gate1Opening : gate2Opening;
+        const openBtn = gateNumber === 1 ? gate1OpenBtn : gate2OpenBtn;
+        const closeBtn = gateNumber === 1 ? gate1CloseBtn : gate2CloseBtn;
+        
+        if (open) {
+            statusElement.textContent = 'Aberta';
+            openingElement.textContent = '100%';
+            openBtn.disabled = true;
+            closeBtn.disabled = false;
+            if (gateNumber === 1) gate1IsOpen = true;
+            else gate2IsOpen = true;
+            addAlert(`Comporta ${gateNumber} aberta manualmente`);
+        } else {
+            statusElement.textContent = 'Fechada';
+            openingElement.textContent = '0%';
+            openBtn.disabled = false;
+            closeBtn.disabled = true;
+            if (gateNumber === 1) gate1IsOpen = false;
+            else gate2IsOpen = false;
+            addAlert(`Comporta ${gateNumber} fechada manualmente`);
+        }
+    }
+    
+    function autoControlGates() {
+        // Lógica para controle automático das comportas
+        if (currentWaterLevel >= 1.8 && !gate1IsOpen) {
+            toggleGate(1, true);
+            addAlert('Comporta 1 aberta automaticamente - Nível crítico');
+        } else if (currentWaterLevel >= 1.65 && !gate2IsOpen) {
+            toggleGate(2, true);
+            addAlert('Comporta 2 aberta automaticamente - Nível elevado');
+        } else if (currentWaterLevel < 1.2) {
+            if (gate1IsOpen) {
+                toggleGate(1, false);
+                addAlert('Comporta 1 fechada automaticamente - Nível normalizado');
+            }
+            if (gate2IsOpen) {
+                toggleGate(2, false);
+                addAlert('Comporta 2 fechada automaticamente - Nível normalizado');
+            }
+        }
+    }
+    
+    function addAlert(message) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        // Remover mensagem "nenhum alerta"
+        const noAlerts = alertsList.querySelector('.no-alerts');
+        if (noAlerts) {
+            alertsList.removeChild(noAlerts);
+        }
+        
+        // Criar novo alerta
+        const alertElement = document.createElement('div');
+        alertElement.classList.add('alert-item');
+        alertElement.innerHTML = `
+            <span class="alert-time">${timeString}</span>
+            <span class="alert-message">${message}</span>
+        `;
+        
+        // Adicionar ao início da lista
+        alertsList.insertBefore(alertElement, alertsList.firstChild);
+        
+        // Limitar número de alertas visíveis
+        alertCount++;
+        if (alertCount > 5) {
+            alertsList.removeChild(alertsList.lastChild);
+        }
+    }
     
