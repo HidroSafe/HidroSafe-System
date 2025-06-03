@@ -575,3 +575,131 @@ footer {
         flex-direction: column;
     }
 }
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-normal {
+    background-color: var(--status-normal);
+}
+
+.status-attention {
+    background-color: var(--status-attention);
+}
+
+.status-alert {
+    background-color: var(--status-alert);
+}
+
+/* Projeto Físico Page */
+.project-details {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-image-container {
+    text-align: center;
+    margin: var(--spacing-lg) 0;
+}
+
+.project-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-lg) 0;
+}
+
+.specs-table th, .specs-table td {
+    padding: var(--spacing-sm);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.specs-table th {
+    background-color: var(--primary-lighter);
+    color: var(--text-color);
+}
+
+/* Painel Page */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card h3 {
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+}
+
+.status-display {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.status-display .status-text {
+    font-weight: 500;
+    margin-left: var(--spacing-xs);
+}
+
+.water-level-container {
+    position: relative;
+    height: 200px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: var(--spacing-md) 0;
+}
+
+.water-level {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--primary-lighter);
+    transition: height var(--transition-speed);
+}
+
+.water-level-marker {
+    position: absolute;
+    width: 100%;
+    border-top: 2px dashed var(--status-alert);
+    left: 0;
+}
+
+.water-level-text {
+    position: absolute;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+.chart-container {
+    height: 300px;
+    margin-top: var(--spacing-md);
+}
