@@ -187,5 +187,33 @@
                 </div>
             </div>
         </section>
+
+        <!-- Seção de SlideShow -->
+        <section id="slideshow" class="section">
+            <div class="container">
+                <h2>Galeria HidroSafe</h2>
+                <div class="slideshow-container">
+                    <div class="slide fade">
+                        <img src="img/slide1.jpg" alt="Sistema HidroSafe instalado próximo a um rio">
+                        <div class="caption">Sistema HidroSafe em funcionamento</div>
+                    </div>
+                    <div class="slide fade">
+                        <img src="img/slide2.jpg" alt="Painel de controle do sistema HidroSafe">
+                        <div class="caption">Painel de controle e monitoramento</div>
+                    </div>
+                    <div class="slide fade">
+                        <img src="img/slide3.jpg" alt="Equipe técnica realizando manutenção no sistema">
+                        <div class="caption">Instalação e manutenção simplificadas</div>
+                    </div>
+                    <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+                    <button class="next" onclick="changeSlide(1)">&#10095;</button>
+                    <div class="dots-container">
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                        <span class="dot" onclick="currentSlide(3)"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
 </body>
 </html>
