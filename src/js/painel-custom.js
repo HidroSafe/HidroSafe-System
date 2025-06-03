@@ -260,3 +260,64 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCharts();
         }
     }
+
+    function autoControlGates() {
+        // Lógica para controle automático das comportas
+        if (currentWaterLevel >= 1.8 && !gate1IsOpen) {
+            toggleGate(1, true);
+            addAlert('Comporta 1 aberta automaticamente - Nível crítico');
+        } else if (currentWaterLevel >= 1.65 && !gate2IsOpen) {
+            toggleGate(2, true);
+            addAlert('Comporta 2 aberta automaticamente - Nível elevado');
+        } else if (currentWaterLevel < 1.2) {
+            if (gate1IsOpen) {
+                toggleGate(1, false);
+                addAlert('Comporta 1 fechada automaticamente - Nível normalizado');
+            }
+            if (gate2IsOpen) {
+                toggleGate(2, false);
+                addAlert('Comporta 2 fechada automaticamente - Nível normalizado');
+            }
+        }
+    }
+    
+    function addAlert(message) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        // Remover mensagem "nenhum alerta"
+        const noAlerts = alertsList.querySelector('.no-alerts');
+        if (noAlerts) {
+            alertsList.removeChild(noAlerts);
+        }
+        
+        // Criar novo alerta
+        const alertElement = document.createElement('div');
+        alertElement.classList.add('alert-item');
+        alertElement.innerHTML = `
+            <span class="alert-time">${timeString}</span>
+            <span class="alert-message">${message}</span>
+        `;
+        
+        // Adicionar ao início da lista
+        alertsList.insertBefore(alertElement, alertsList.firstChild);
+        
+        // Limitar número de alertas visíveis
+        alertCount++;
+        if (alertCount > 5) {
+            alertsList.removeChild(alertsList.lastChild);
+        }
+    }
+    
+    function updateCharts() {
+        // Atualizar gráfico de nível da água
+        if (typeof updateWaterLevelChart === 'function') {
+            updateWaterLevelChart(currentWaterLevel);
+        }
+    }
+    
+    // Inicializar valores
+    updateWaterLevel(currentWaterLevel);
+    updateElevationRate(currentElevationRate);
+    updateLastUpdate();
+});
