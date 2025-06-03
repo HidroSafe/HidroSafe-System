@@ -140,3 +140,78 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Atualizar gráficos
             updateCharts();
+
+            // Comportamento automático das comportas
+            if (operationMode.value === 'auto') {
+                autoControlGates();
+            }
+            
+            // Parar recuperação quando o nível voltar ao normal
+            if (currentWaterLevel <= 0.9) {
+                clearInterval(recoveryInterval);
+                updateElevationRate(0.0);
+                updatePrecipitation('0mm');
+                updateForecast('Estável');
+            }
+        }, 3000);
+    }
+    
+    function updateWaterLevel(level) {
+        const formattedLevel = level.toFixed(1);
+        currentLevelText.textContent = `${formattedLevel}m`;
+        
+        // Atualizar visualização do nível da água (0-100%)
+        const percentage = Math.min(100, (level / 2.5) * 100);
+        waterLevel.style.height = `${percentage}%`;
+    }
+    
+    function updateElevationRate(rate) {
+        elevationRate.textContent = `${rate} cm/h`;
+    }
+    
+    function updateHumidity(value) {
+        humidity.textContent = `${value}%`;
+    }
+    
+    function updateTemperature(value) {
+        temperature.textContent = `${value.toFixed(1)}°C`;
+    }
+    
+    function updatePrecipitation(value) {
+        precipitation.textContent = value;
+    }
+    
+    function updateForecast(value) {
+        forecast.textContent = value;
+    }
+    
+    function updateLastUpdate() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        lastUpdate.textContent = timeString;
+    }
+    
+    function checkAlertLevels() {
+        const statusIndicator = currentStatus.querySelector('.status-indicator');
+        const statusText = currentStatus.querySelector('.status-text');
+
+        // Remover classes existentes
+        statusIndicator.classList.remove('status-normal', 'status-attention', 'status-alert');
+        
+        if (currentWaterLevel >= 1.8) {
+            // Nível crítico
+            statusIndicator.classList.add('status-alert');
+            statusText.textContent = 'ALERTA';
+            addAlert('ALERTA: Nível crítico atingido!');
+        } else if (currentWaterLevel >= 1.5) {
+            // Nível de atenção
+            statusIndicator.classList.add('status-attention');
+            statusText.textContent = 'Atenção';
+            addAlert('Atenção: Nível elevado detectado');
+        } else {
+            // Nível normal
+            statusIndicator.classList.add('status-normal');
+            statusText.textContent = 'Normal';
+        }
+    }
+    
