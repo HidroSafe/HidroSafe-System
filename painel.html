@@ -37,3 +37,115 @@
             </div>
         </div>
     </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <h2>Painel de Status HidroSafe</h2>
+                <p class="panel-description">Este painel simula o monitoramento em tempo real do sistema HidroSafe. Os dados apresentados são simulados para fins de demonstração.</p>
+                
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Status Atual</h3>
+                        <div class="status-display" id="current-status">
+                            <span class="status-indicator status-normal"></span>
+                            <span class="status-text">Normal</span>
+                        </div>
+                        <p>Última atualização: <span id="last-update">Agora</span></p>
+                        <div class="water-level-container">
+                            <div class="water-level" id="water-level" style="height: 30%;"></div>
+                            <div class="water-level-marker" style="bottom: 60%;">
+                                <span class="water-level-text">Nível de Alerta (1.5m)</span>
+                            </div>
+                            <div class="water-level-marker" style="bottom: 80%;">
+                                <span class="water-level-text">Nível Crítico (1.8m)</span>
+                            </div>
+                        </div>
+                        <div class="level-info">
+                            <p>Nível atual: <strong id="current-level">0.9m</strong></p>
+                            <p>Taxa de elevação: <strong id="elevation-rate">0.0 cm/h</strong></p>
+                        </div>
+                        <button class="btn" id="simulate-rain">Simular Chuva</button>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Condições Ambientais</h3>
+                        <div class="env-conditions">
+                            <p>Temperatura: <strong id="temperature">24°C</strong></p>
+                            <p>Umidade: <strong id="humidity">65%</strong></p>
+                            <p>Precipitação nas últimas 24h: <strong id="precipitation">0mm</strong></p>
+                            <p>Previsão para próximas 6h: <strong id="forecast">Estável</strong></p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="humidityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard">
+                    <div class="dashboard-card full-width">
+                        <h3>Histórico de Nível da Água (Últimas 72 horas)</h3>
+                        <div class="chart-container">
+                            <canvas id="waterLevelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Status do Sistema</h3>
+                        <div class="system-status">
+                            <p>Módulo de Monitoramento: <span class="status-ok">Operacional</span></p>
+                            <p>Módulo de Controle: <span class="status-ok">Operacional</span></p>
+                            <p>Comunicação: <span class="status-ok">Estável</span></p>
+                            <p>Bateria: <span class="status-ok">85%</span></p>
+                            <p>Última manutenção: <span>15/04/2025</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <h3>Alertas Recentes</h3>
+                        <div class="alerts-list" id="alerts-list">
+                            <p class="no-alerts">Nenhum alerta recente.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard">
+                    <div class="dashboard-card full-width">
+                        <h3>Controle de Comportas</h3>
+                        <div class="gates-control">
+                            <div class="gate-status">
+                                <h4>Comporta 1</h4>
+                                <p>Status: <span id="gate1-status">Fechada</span></p>
+                                <p>Abertura: <span id="gate1-opening">0%</span></p>
+                                <div class="gate-controls">
+                                    <button class="btn btn-small" id="gate1-open">Abrir</button>
+                                    <button class="btn btn-small" id="gate1-close" disabled>Fechar</button>
+                                </div>
+                            </div>
+                            
+                            <div class="gate-status">
+                                <h4>Comporta 2</h4>
+                                <p>Status: <span id="gate2-status">Fechada</span></p>
+                                <p>Abertura: <span id="gate2-opening">0%</span></p>
+                                <div class="gate-controls">
+                                    <button class="btn btn-small" id="gate2-open">Abrir</button>
+                                    <button class="btn btn-small" id="gate2-close" disabled>Fechar</button>
+                                </div>
+                            </div>
+                            
+                            <div class="gate-status">
+                                <h4>Modo de Operação</h4>
+                                <select id="operation-mode" class="select-control">
+                                    <option value="auto" selected>Automático</option>
+                                    <option value="manual">Manual</option>
+                                </select>
+                                <p class="mode-info">No modo automático, as comportas são controladas pelo sistema com base nos níveis de água e previsões.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
