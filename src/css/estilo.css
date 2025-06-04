@@ -124,6 +124,7 @@ header .container {
     align-items: center;
     padding: var(--spacing-md) var(--spacing-md);
     height: 80px; /* Altura fixa para o header */
+    padding-left: 55px;
 }
 
 .logo {
