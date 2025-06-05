@@ -68,8 +68,11 @@ HidroSafe-System/
 ## Tecnologias Utilizadas
 
 •HTML5
+
 •CSS3 (com variáveis para temas e responsividade)
+
 •JavaScript (sem bibliotecas externas)
+
 •Estrutura modular com separação por páginas e funções
 
 ---
